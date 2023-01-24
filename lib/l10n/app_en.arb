@@ -1,0 +1,78 @@
+{
+    "helloWorld": "Hello World!",
+    "@helloWorld": {
+      "description": "The conventional newborn programmer greeting"
+    },
+    "qurankareem": "Al Quran Kareem",
+    "@qurankareem":{
+       "description": "the title of whole quran"
+    },
+     "language": "Languae",
+    "@language": {
+      "description": "language identifier"
+    },
+     "english": "English",
+    "@english": {
+      "description": "this is english identifier"
+    },
+     "arabic": "Arabic",
+    "@arabic": {
+      "description": "this is arabic identifier"
+    },
+    "kurdish": "Kurdish",
+    "@kurdish": {
+      "description": "this is kurdish identifier"
+    },
+     "qurancompletion": "Quran Completion",
+    "@qurancompletion": {
+      "description": "this is quran completion identifier"
+    },
+     "surah": "Surah",
+    "@surah": {
+      "description": "this is Surah identifier"
+    },
+      "juzz": "Juzz",
+    "@juzz": {
+      "description": "this is Juzz identifier"
+    },
+     "page": "Page",
+    "@page": {
+      "description": "this is page identifier"
+    },
+     "fontsize": "Font Size",
+    "@fontsize": {
+      "description": "this is Font Size identifier"
+    },
+     "verses": "Verses",
+    "@verses": {
+      "description": "this is verses identifier"
+    },
+     "start": "Start",
+    "@start": {
+      "description": "start identifier"
+    },
+    "end": "End",
+    "@end": {
+      "description": "end identifier"
+    },
+     "juz": "Juz",
+    "@juz": {
+      "description": "Juz identifier"
+    },
+     "required_internet": "Please check internet connection",
+    "@required_internet": {
+      "description": "this is an error message when user click on things that internet requried"
+    },
+     "surah_not_exist": "Sorry,Surah is not exist.",
+    "@surah_not_exist": {
+      "description": "this is an error message when user play a surah"
+    },
+    "bookmarks": "Bookmarks",
+    "@bookmarks": {
+      "description": "this is page or surah bookmark"
+    }
+
+
+
+  
+}

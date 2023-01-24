@@ -1,0 +1,22 @@
+{
+    "helloWorld": "مرحبا العالم",
+    "qurankareem": "القرآن الكريم",
+    "language" : "اللغات",
+    "english": "الإنجليزية",
+     "arabic": "عربى",
+     "kurdish": "كردي",
+     "qurancompletion": "استكمال القرآن",
+     "surah": "سورة",
+     "juzz": "أجزاء",
+     "page": "صفحة",
+     "fontsize":"حجم الخط",
+     "verses":"آياتها",
+     "start":"بداية",
+     "end":"نهاية",
+     "juz": "جزء",
+     "required_internet":"يرجى التحقق من اتصال الإنترنت",
+     "surah_not_exist":"آسف السورة غير موجودة",
+     "bookmarks":"المرجعيات"
+     
+
+}
