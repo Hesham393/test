@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:quran_twekl_app/materialColor/pallete.dart';
 import '../../../../providers/providers.dart';
 
 class FontSizeSelection extends ConsumerWidget {
@@ -11,6 +12,8 @@ class FontSizeSelection extends ConsumerWidget {
   Widget build(BuildContext context, ref) {
     final fontSize = ref.watch(quranFontSize);
     return Slider.adaptive(
+      inactiveColor: Colors.white,
+      activeColor: pallete.secondaryColor,
       value: fontSize,
       onChanged: ((val) => ref.read(quranFontSize.notifier).state = val),
       label: "$fontSize",

@@ -33,6 +33,16 @@ class CustomPlayList with ChangeNotifier {
     notifyListeners();
   }
 
+  bool isUrlSource() {
+    if (_audioSouces.isNotEmpty) {
+      if (_audioSouces[0] is UrlSource) {
+        return true;
+      }
+      return false;
+    }
+    return false;
+  }
+
   void addSource(Source source) {
     _audioSouces.add(source);
     notifyListeners();

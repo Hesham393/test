@@ -183,8 +183,14 @@ class OnAyahClickDialog extends ConsumerWidget {
                   }
                 },
                 icon: isBookmarked
-                    ?const Icon(Icons.bookmark_outlined,color: pallete.ayahBookmarkColor,)
-                    : const Icon(Icons.bookmark_outline_sharp,color: pallete.ayahBookmarkColor,),
+                    ? const Icon(
+                        Icons.bookmark_outlined,
+                        color: pallete.ayahBookmarkColor,
+                      )
+                    : const Icon(
+                        Icons.bookmark_outline_sharp,
+                        color: pallete.ayahBookmarkColor,
+                      ),
               );
             })
           ]),
@@ -200,12 +206,15 @@ bool isHighlighted(int surah, Ayah ayah, WidgetRef ref) {
   final selectedSurah = ref.watch(customPlaylistProvider).surahNumber;
   final selectedAyah = ref.watch(customPlaylistProvider).ayahIndex;
 
-  if (selectedAyah == (ayah.numberInSurah - 1) && selectedSurah == surah) {
+  if (selectedAyah == (ayah.numberInSurah) && selectedSurah == surah) {
     final readQuranScrollController =
         ref.read(readQuranScrollControllerProvider);
     final customPlaylist = ref.watch(customPlaylistProvider).isPlay;
-    if (readQuranScrollController.isAttached && customPlaylist) {
+    if (readQuranScrollController.isAttached &&
+        customPlaylist &&
+        ayah.page != ref.read(quranPageIndexProvider)) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
+      
         readQuranScrollController.navigateToReadedAyah(ayah.page - 1);
       });
     }

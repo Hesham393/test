@@ -16,6 +16,7 @@ abstract class ListeningQuranRepository {
   Future<List<AudioAyah>> getAudioAyahsOfSurah(int surahNumber, String qari);
   Future<Either<Failure, void>> downloadSurah(
       int surahNumber, String qari, DownloadProgress downloadProgress);
+  Future<List<String>> getSurahUrls(int surahNumber, String qari);
 }
 
 class ListeningQuranRepositoryImp extends ListeningQuranRepository {
@@ -91,4 +92,10 @@ class ListeningQuranRepositoryImp extends ListeningQuranRepository {
   @override
   Future<bool> isDownloadedSurah(int surahNumber, String qari) async =>
       await _localDataSourceImp.isDownloaded(surahNumber, qari);
+
+  @override
+  Future<List<String>> getSurahUrls(int surahNumber, String qari) async {
+    final ayahIDs = await _localDataSourceImp.getAyahsIdOfSurah(surahNumber);
+    return _remoteDataSourceImp.getSurahUrls(surahNumber, ayahIDs, qari);
+  }
 }

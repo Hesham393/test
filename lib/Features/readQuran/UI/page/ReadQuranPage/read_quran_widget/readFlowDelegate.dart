@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quran_twekl_app/core/responsiveness/responsive.dart';
 
 class ReadFlowDelegate extends FlowDelegate {
   ReadFlowDelegate({@required this.animation, this.ctx})
@@ -11,7 +12,8 @@ class ReadFlowDelegate extends FlowDelegate {
     for (int i = 0; i < context.childCount; i++) {
       double amount = -1 * i * animation.value * 45;
 
-      double dy = MediaQuery.of(ctx).size.height - (kBottomNavigationBarHeight);
+      double dy =
+          MediaQuery.of(ctx).size.height - (kBottomNavigationBarHeight + 23);
       double w = MediaQuery.of(ctx).size.width - 65;
 
       // double dx = (i * animation.value * w);

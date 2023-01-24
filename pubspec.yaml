@@ -41,7 +41,7 @@ dependencies:
   # background_location: ^0.8.1
   http: ^0.13.4
   sqflite_common_ffi: ^2.1.1+1
-  audioplayers: ^1.0.1
+  audioplayers: ^2.0.0
   dio: ^4.0.6
   scroll_snap_list: ^0.9.1
   flutter_qiblah: ^2.1.0

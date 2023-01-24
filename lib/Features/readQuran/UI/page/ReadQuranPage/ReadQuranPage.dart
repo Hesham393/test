@@ -220,10 +220,11 @@ class _ReadQuranPageState extends ConsumerState<ReadQuranPage>
             final bottomNavigation = ref.watch(readQuranControllerFlag);
             // if (bottomNavigation) {
             return Padding(
-              padding: const EdgeInsets.only(left: 15, right: 15, bottom: 15),
+              padding: const EdgeInsets.only(left: 0, right: 0, bottom: 0),
               child: AnimatedContainer(
                 curve: Curves.easeOut,
-
+                margin: EdgeInsets.only(
+                    left: 15, right: 15, bottom: bottomNavigation ? 15 : 0),
                 duration: const Duration(milliseconds: 400),
                 height: bottomNavigation ? kBottomNavigationBarHeight : 0,
                 decoration: BoxDecoration(
@@ -269,12 +270,19 @@ class _ReadQuranPageState extends ConsumerState<ReadQuranPage>
             // Navigator.of(context).pushReplacementNamed(HomePage.routeName);
             // },
             // child:
-            Flow(
+            Consumer(builder: (context, ref, child) {
+          final isBottomNavigationAppear = ref.watch(readQuranControllerFlag);
+          return AnimatedOpacity(
+            duration: const Duration(milliseconds: 300),
+            opacity: isBottomNavigationAppear ? 1.0 : 0,
+            child: Flow(
                 delegate: ReadFlowDelegate(
                     animation: _animationController, ctx: context),
                 children: menuItems
                     .map<Widget>((icon) => flowMenuItem(icon))
                     .toList()),
+          );
+        }),
       ),
 
       // ),
@@ -283,6 +291,7 @@ class _ReadQuranPageState extends ConsumerState<ReadQuranPage>
 
   Widget _buildBody() {
     final data = ref.watch(allAyahProvider);
+    
     return data.when(
       data: (data) => NestedScrollView(
         headerSliverBuilder: (context, innerBoxIsScrolled) {
@@ -332,11 +341,11 @@ class _ReadQuranPageState extends ConsumerState<ReadQuranPage>
             } else if (_scrollDirection == ScrollDirection.forward &&
                 _animationStatus == AnimationStatus.dismissed) {
               print("forward animation has been executed");
-              // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-              //   _animationController.forward();
-              // });
+              //   WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+              //     _animationController.forward();
+              //   });
             }
-            //print("notification : ${_scrollDirection.toString()}");
+            print("notification : ${_scrollDirection.toString()}");
             return true;
           },
           child: ScrollablePositionedList.builder(

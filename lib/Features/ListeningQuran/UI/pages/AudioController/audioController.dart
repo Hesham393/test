@@ -2,6 +2,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:quran_twekl_app/Features/readQuran/UI/page/home_page.dart';
+import 'package:quran_twekl_app/core/platform/networkInfo.dart';
 import 'package:quran_twekl_app/core/responsiveness/responsive.dart';
 import '../../../../readQuran/UI/page/ReadQuranPage/read_quran_widget/scrollFormDialogWT.dart';
 import '../../../Providers/providers.dart';
@@ -305,7 +306,11 @@ class _AudioControllerState2 extends ConsumerState<AudioController2> {
         _isPlay = true;
         _customPlayList.setPlay();
       });
-    } else if (state == PlayerState.stopped || state == PlayerState.paused) {
+    }
+    // else if (state == PlayerState.completed && _ayahIndex == 0) {
+    //   _ayahIndex--;
+    // }
+    else if (state == PlayerState.stopped || state == PlayerState.paused) {
       setState(() {
         _playerState = state;
         _isPlay = false;
@@ -329,6 +334,7 @@ class _AudioControllerState2 extends ConsumerState<AudioController2> {
     _ayahIndex++;
     _customPlayList.setAyahIndex(_ayahIndex);
     if (_ayahIndex < _customPlayList.length && !_isOnlyAyah) {
+      _audioPlayer.setSource(_customPlayList.sources[_ayahIndex]);
       await _audioPlayer.play(_customPlayList.sources[_ayahIndex]);
       _customPlayList.setPlay();
     } else {
@@ -341,15 +347,26 @@ class _AudioControllerState2 extends ConsumerState<AudioController2> {
   Future<void> setPlaylist(int surahNumber, String qari) async {
     if (surahNumber != _customPlayList.surahNumber ||
         _customPlayList.length == 0 ||
-        qari != _customPlayList.getQari) {
+        qari != _customPlayList.getQari ||
+        _customPlayList.isUrlSource()) {
       _customPlayList.setQari(qari);
 
       final audioFiles = await ref
           .read(listeningQuranRepositoryProvider)
           .getAudioAyahsOfSurah(surahNumber, qari);
 
-      final audioSources = List<Source>.generate(audioFiles.length,
+      List<Source> audioSources = List<Source>.generate(audioFiles.length,
           (index) => DeviceFileSource(audioFiles[index].filePath));
+
+      if (audioSources.isEmpty) {
+        print("stream audio");
+        final surahURLs = await ref
+            .read(listeningQuranRepositoryProvider)
+            .getSurahUrls(surahNumber, qari);
+
+        audioSources = List<Source>.generate(
+            surahURLs.length, (index) => UrlSource(surahURLs[index]));
+      }
       if (_customPlayList.length > 0) {
         _customPlayList.clearAll();
       }
@@ -364,10 +381,18 @@ class _AudioControllerState2 extends ConsumerState<AudioController2> {
 
   Future<void> playSurah(int surahNumber, String qari) async {
     await setPlaylist(surahNumber, qari);
-    if (_customPlayList.length == 0) {
-      showSnackBar("Sorry,Surah has been not available.", context);
-      return;
-    }
+    // if (_customPlayList.length == 0) {
+    //   // final surahURLs = await ref
+    //   //     .read(listeningQuranRepositoryProvider)
+    //   //     .getSurahUrls(surahNumber, qari);
+    //   // // _audioPlayer.setSourceUrl(surahURLs[0]);
+    //   // surahURLs.forEach((element) {
+    //   //   print(element);
+    //   // });
+    //   // await _audioPlayer.play(UrlSource(surahURLs[1]));
+    //   // showSnackBar("Sorry,Surah has been not available.", context);
+    //   return;
+    // }
     await _audioPlayer.play(_customPlayList.sources[_ayahIndex]);
     _customPlayList.setPlay();
   }
@@ -375,6 +400,7 @@ class _AudioControllerState2 extends ConsumerState<AudioController2> {
   Future<void> pause() async {
     if (_isPlay) {
       await _audioPlayer.pause();
+
       _customPlayList.setPause();
     }
   }
@@ -452,66 +478,67 @@ class _AudioControllerState2 extends ConsumerState<AudioController2> {
     final leftSide = lan == "en" ? "left" : "right";
     final rightSide = lan == "en" ? "right" : "left";
     return Row(
-        mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Padding(
-            padding: EdgeInsets.only(
-                left: getPercentageOfResponsiveWidth(5, context)),
-            child: AudioControllerButton(() {
-              Navigator.of(context).pushReplacementNamed(HomePage.routeName);
-              ref.read(bottomNavigationIndexProvider.notifier).state = 0;
-            }, "assets/images/home.png", size: 25),
-          ),
+          // Padding(
+          //   padding: EdgeInsets.only(
+          //       left: getPercentageOfResponsiveWidth(5, context)),
+          //   child: AudioControllerButton(() {
+          //     Navigator.of(context).pushReplacementNamed(HomePage.routeName);
+          //     ref.read(bottomNavigationIndexProvider.notifier).state = 0;
+          //   }, "assets/images/home.png", size: 25),
+          // ),
           //next surah
-          Expanded(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                AudioControllerButton(nextOrPreviousSurah,
-                    AudioControllerImages["nextSurah-$leftSide"]),
-                AudioControllerButton(
-                    previousAyah, AudioControllerImages["nextAyah-$leftSide"]),
-                IconButton(
-                  onPressed: () async {
-                    if (!_isPlay) {
-                      await playSurah(
-                          _customPlayList.surahNumber, _customPlayList.getQari);
-                    } else {
-                      await pause();
-                    }
-                  },
-                  icon: _isPlay
-                      ? createAudioControllerIcon(
-                          "assets/images/AudioController/pause.png")
-                      : createAudioControllerIcon(
-                          "assets/images/AudioController/play_btn.png"),
-                ),
-                AudioControllerButton(
-                    nextAyah, AudioControllerImages["nextAyah-$rightSide"]),
-                AudioControllerButton(
-                    nextSurah, AudioControllerImages["nextSurah-$rightSide"]),
-              ],
-            ),
+          // Expanded(
+          //   child: Row(
+
+          //     mainAxisAlignment: MainAxisAlignment.center,
+          //     children: [
+          AudioControllerButton(nextOrPreviousSurah,
+              AudioControllerImages["nextSurah-$leftSide"]),
+          AudioControllerButton(
+              previousAyah, AudioControllerImages["nextAyah-$leftSide"]),
+          IconButton(
+            onPressed: () async {
+              if (!_isPlay) {
+                await playSurah(
+                    _customPlayList.surahNumber, _customPlayList.getQari);
+              } else {
+                await pause();
+              }
+            },
+            icon: _isPlay
+                ? createAudioControllerIcon(
+                    "assets/images/AudioController/pause.png")
+                : createAudioControllerIcon(
+                    "assets/images/AudioController/play_btn.png"),
           ),
-          Padding(
-            padding: EdgeInsets.only(
-                right: getPercentageOfResponsiveWidth(5, context)),
-            child: AudioControllerButton(() {
-              showDialog(
-                context: context,
-                builder: (context) {
-                  // ThemeConfig().init(context);
-                  // final textStyle = ThemeConfig.generalHeadline;
-                  return ScrollFormDialog(
-                      animatedToIndex: ref
-                          .read(readQuranScrollControllerProvider)
-                          .animatedToIndex);
-                },
-              );
-            }, "assets/images/scroll.png", size: 25),
-          ),
+          AudioControllerButton(
+              nextAyah, AudioControllerImages["nextAyah-$rightSide"]),
+          AudioControllerButton(
+              nextSurah, AudioControllerImages["nextSurah-$rightSide"]),
+          // ],
+          // ),
+          // ),
+          // Padding(
+          //   padding: EdgeInsets.only(
+          //       right: getPercentageOfResponsiveWidth(5, context)),
+          //   child: AudioControllerButton(() {
+          //     showDialog(
+          //       context: context,
+          //       builder: (context) {
+          //         // ThemeConfig().init(context);
+          //         // final textStyle = ThemeConfig.generalHeadline;
+          //         return ScrollFormDialog(
+          //             animatedToIndex: ref
+          //                 .read(readQuranScrollControllerProvider)
+          //                 .animatedToIndex);
+          //       },
+          //     );
+          //   }, "assets/images/scroll.png", size: 25),
+          // ),
           // AudioControllerButton(() {
           //   Navigator.of(context).pushReplacementNamed(HomePage.routeName);
           //   ref.read(bottomNavigationIndexProvider.notifier).state = 0;
@@ -543,7 +570,6 @@ Widget AudioControllerButton(Function action, String path, {double size = 20}) {
 
 Widget createAudioControllerIcon(String path, {double size = 20}) {
   return SizedBox(
-   
     width: size,
     height: size,
     child: Image.asset(

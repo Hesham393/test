@@ -10,6 +10,9 @@ import '../downloadStatus/dowloadStatus.dart';
 abstract class RemoteDataSource {
   Future<List<AudioFile>> downloadAudioFilesOfSurah(int surahNumber,
       List<int> ayahIdOfSurah, String qari, DownloadProgress downloadProgress);
+
+  List<String> getSurahUrls(
+      int surahNumber, List<int> ayahIdOfSurah, String qari);
 }
 
 class RemoteDataSourceImp extends RemoteDataSource {
@@ -33,14 +36,17 @@ class RemoteDataSourceImp extends RemoteDataSource {
       DownloadProgress downloadProgress) async {
     List<AudioFile> list = [];
     try {
-      int count = 1;
-      for (var ayah in ayahIdOfSurah) {
+      // int count = 0;
+      //if you want to inclue bismilah you have to loop till the length+1 of list
+      //we're going to use index for everyAyah api
+      //we're goint to use ayah number([1-6236]) for cdn.islamic.network
+      for (int i = 0; i <= ayahIdOfSurah.length; i++) {
         list.add(await _downloadSingleAudioFile(
-            surahNumber, ayah, count, qari, downloadProgress));
-        count++;
+            surahNumber, ayahIdOfSurah[0], i, qari, downloadProgress));
+        // count++;
       }
       return list;
-    } catch (e) {                       
+    } catch (e) {
       print("${e.runtimeType.toString()} ......................0000");
       throw ConnectionException();
     }
@@ -85,7 +91,6 @@ class RemoteDataSourceImp extends RemoteDataSource {
     switch (number.toString().length) {
       case 1:
         return "00$number";
-
       case 2:
         return "0$number";
 
@@ -95,5 +100,18 @@ class RemoteDataSourceImp extends RemoteDataSource {
         return "wrong number";
         break;
     }
+  }
+
+  String _getSingleAyahUrl(int surahNumber, String qari, int index) {
+    String ayahNumber = getNumberOfAyahOrSurah(index);
+    String surah = getNumberOfAyahOrSurah(surahNumber);
+    return "$_audioEndPoint/$qari/$surah$ayahNumber.mp3";
+  }
+
+  @override
+  List<String> getSurahUrls(
+      int surahNumber, List<int> ayahIdOfSurah, String qari) {
+    return List<String>.generate(ayahIdOfSurah.length + 1,
+        (index) => _getSingleAyahUrl(surahNumber, qari, index));
   }
 }
